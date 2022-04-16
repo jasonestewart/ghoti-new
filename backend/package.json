@@ -10,6 +10,9 @@
     "test": "npm run generate && env NODE_ENV=test jest --verbose",
     "start": "npm run build && node dist/app/server.js"
   },
+  "engines": {
+    "node": "16.x"
+  },
   "jest": {
     "preset": "ts-jest",
     "globals": {
