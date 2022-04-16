@@ -1,0 +1,14 @@
+version: "3.7"
+
+services:
+  app:
+    container_name: ghoti
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    env_file: .env
+    environment:
+      - GHOTI_PORT=${GHOTI_PORT}
+    ports:
+      - 4000:4000

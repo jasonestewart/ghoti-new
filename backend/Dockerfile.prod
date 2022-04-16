@@ -1,0 +1,32 @@
+FROM node:16-alpine
+RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
+WORKDIR /home/node/app
+COPY --chown=node:node package*.json ./
+COPY --chown=node:node tsconfig.json ./
+
+USER node
+RUN npm install
+COPY --chown=node:node . ./
+
+RUN npm run build
+
+# Stage Two 
+FROM node:16-alpine
+RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
+WORKDIR /home/node/app
+
+COPY --chown=node:node package*.json ./
+USER node
+
+RUN mkdir -p /home/node/app/.npm-global/bin \
+    && npm config set prefix '/home/node/app/.npm-global' \
+    && npm install -g pm2
+
+ENV PATH=/home/node/app/.npm-global/bin:${PATH}
+
+RUN npm install --only=production
+
+COPY --from=0 /home/node/app/dist .
+RUN npm install pm2 -g
+EXPOSE 4000
+CMD ["pm2-runtime","app/server.js"]

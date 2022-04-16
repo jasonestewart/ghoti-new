@@ -1,0 +1,14 @@
+version: "3.7"
+
+services:
+  app:
+    container_name: app
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    env_file: .env
+    environment:
+      - PORT=${PORT}
+    ports:
+      - 4000:4000
