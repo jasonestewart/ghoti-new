@@ -9,7 +9,6 @@ class Header extends React.Component {
                 <img src={logo} alt='logo'/>
                 <span className='mascot'>Your favorite anagram game</span>
             </div>
-            <div className="mid_screen" id="timer">0:00</div>
             <div id="line" />
             </div>
         );
