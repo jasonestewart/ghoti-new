@@ -1,5 +1,4 @@
 import Letters from './Letters';
-import Guesses from './Guesses';
 import Score from './Score';
 import * as React from 'react';
 import GhotiModel from '../model/GhotiModel';
@@ -25,7 +24,7 @@ class ScoreCard extends React.Component<MyProps, MyState> {
                     percent={Math.floor(this.props.model.getPercent() * 100)} 
                     round={this.props.model.getRound()}/>
                 <Letters letters={this.props.model.getAvailableLetters()} />
-                <Guesses guesses={this.props.model.getGuessedLetters()}/>
+                <Letters letters={this.props.model.getGuessedLetters()}/>
             </div>
         );
 

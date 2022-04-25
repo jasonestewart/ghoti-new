@@ -11,7 +11,6 @@ type MyProps = {
 type MyState = {
     paused: boolean,
     finished: boolean,
-    lastKeyPressed: string,
     message: string
 }
 
@@ -28,7 +27,6 @@ class Game extends React.Component<MyProps, MyState> {
         this.state = {
             paused: false,
             finished: false,
-            lastKeyPressed: '',
             message: ''
         };
         if (!this.__init) {
@@ -102,10 +100,15 @@ class Game extends React.Component<MyProps, MyState> {
     }
 
     UpdateTimer = () => {
-        const Minutes = Math.floor(this.totalSecs / 60);
-        this.totalSecs -= Minutes * (60);
+        let timeStr: string = '';
+        if (this.state.paused) {
+            timeStr = 'PAUSED';
+        } else {
+            const Minutes = Math.floor(this.totalSecs / 60);
+            this.totalSecs -= Minutes * (60);
 
-        const timeStr = Minutes + ":" + this.LeadingZero(this.totalSecs);
+            timeStr = Minutes + ":" + this.LeadingZero(this.totalSecs);
+        }
 
         this.timer.innerHTML = timeStr;
         // console.log("UpdateTimer: calling for secs: ", this.totalSecs);
@@ -127,7 +130,7 @@ class Game extends React.Component<MyProps, MyState> {
         if (this.totalSecs <= 0) {
             this.timeIsUp();
         } else {
-            if (!this.state.paused) {
+            if (this.state.paused) {
                 this.totalSecs -= 1;
             }
             this.UpdateTimer();
@@ -211,8 +214,6 @@ class Game extends React.Component<MyProps, MyState> {
         event.preventDefault();
 
         const key = event.key;
-        this.setState({lastKeyPressed: `key: ${key}`});
-
         if (key === "Escape") {
             this.handleEsc();
         } else if (!this.state.paused) {
