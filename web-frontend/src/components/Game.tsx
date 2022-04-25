@@ -232,41 +232,41 @@ class Game extends React.Component<MyProps, MyState> {
     }
 
 
-    alert_message(message: string) {
-        const fade: HTMLDivElement = document.createElement('div');
-        fade.setAttribute('class', 'fade-in');
-        fade.style.display = 'block';
+    // alert_message(message: string) {
+    //     const fade: HTMLDivElement = document.createElement('div');
+    //     fade.setAttribute('class', 'fade-in');
+    //     fade.style.display = 'block';
 
-        const mh: HTMLDivElement = document.createElement('div');
-        mh.setAttribute('id', 'message-holder');
-        mh.style.opacity = '0';
-        fade.appendChild(mh);
+    //     const mh: HTMLDivElement = document.createElement('div');
+    //     mh.setAttribute('id', 'message-holder');
+    //     mh.style.opacity = '0';
+    //     fade.appendChild(mh);
 
-        var p = document.createElement('p');
-        p.innerHTML = message;
-        mh.appendChild(p);
-        document.body.insertBefore(fade, document.getElementById('background'));
-        this.anim_in(mh, 0);
-    }
-    anim_out = (ele: HTMLDivElement, op: number) => {
-        op = op - 0.1;
-        ele.style.opacity = op.toString();
-        if(op > 0){
-            setTimeout(() => {this.anim_out(ele, op)},100);
-        } else {
-            ele.style.opacity = '0';
-        }
-    }
-    anim_in = (ele: HTMLDivElement, op: number) => {
-        op = op + 0.1;
-        ele.style.opacity = op.toString();
-        if (op < 1) {
-            setTimeout(() => {this.anim_in(ele, op)},100);
-        } else {
-            ele.style.opacity = '1';
-            setTimeout(() => {this.anim_out(ele, op)},10000);
-        }	
-    }
+    //     var p = document.createElement('p');
+    //     p.innerHTML = message;
+    //     mh.appendChild(p);
+    //     document.body.insertBefore(fade, document.getElementById('background'));
+    //     this.anim_in(mh, 0);
+    // }
+    // anim_out = (ele: HTMLDivElement, op: number) => {
+    //     op = op - 0.1;
+    //     ele.style.opacity = op.toString();
+    //     if(op > 0){
+    //         setTimeout(() => {this.anim_out(ele, op)},100);
+    //     } else {
+    //         ele.style.opacity = '0';
+    //     }
+    // }
+    // anim_in = (ele: HTMLDivElement, op: number) => {
+    //     op = op + 0.1;
+    //     ele.style.opacity = op.toString();
+    //     if (op < 1) {
+    //         setTimeout(() => {this.anim_in(ele, op)},100);
+    //     } else {
+    //         ele.style.opacity = '1';
+    //         setTimeout(() => {this.anim_out(ele, op)},10000);
+    //     }	
+    // }
 
 
     
