@@ -11,22 +11,13 @@ import '@fontsource/roboto/700.css';
 import Ghoti from './components/Ghoti';
 
 type GhotiState = {
-  lastKeyPressed: string,
-  word: string,
-  paused: boolean,
   started: boolean
 };
 
 class App extends React.Component<{}, GhotiState> {
   model: GhotiModel;
-  GAME_TIME = 120;
-  EMPTY = "";
-  EMPTY_WORD = this.EMPTY.repeat(7);
 
   state = {
-    lastKeyPressed: '',
-    word: this.EMPTY_WORD,
-    paused: false,
     started: false
   };
 
@@ -39,27 +30,10 @@ class App extends React.Component<{}, GhotiState> {
     return (
       <div id="home_wrap">
         <Header />
-          <button onClick={this.start}>{this.state.started ? "Stop" : "Start"}</button>
-        <Ghoti started={this.state.started} callback={this.start} model={this.model} />
+        <Ghoti model={this.model} />
       </div>
     );
 
   }
-
-  start = async () => {
-    if (this.state.started) {
-      this.setState({
-        started: false
-      });
-    } else {
-      await this.model.fetchNewWord(); 
-      this.setState({
-        started: true,
-        word: this.model.getCurrentWord()
-      });
-    }
-  };
-
 }
-
 export default App;

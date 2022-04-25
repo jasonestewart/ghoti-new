@@ -4,19 +4,23 @@ import Game from './Game';
 import GhotiModel from '../model/GhotiModel';
 
 type MyProps = {
-    started: boolean,
-    callback: () => void,
     model: GhotiModel
 }
 
 type MyState = {
+  started: boolean
 }
 
 class Ghoti extends React.Component<MyProps, MyState> {
+  constructor(props: MyProps) {
+    super(props);
+    this.state = {started: false};
+  }
+
   render() {
-    if (!this.props.started) {
+    if (!this.state.started) {
         return(
-            <StartInfo callback={this.props.callback}/>
+            <StartInfo callback={this.start}/>
         );
     }
 
@@ -26,5 +30,16 @@ class Ghoti extends React.Component<MyProps, MyState> {
     );
 
   }
+
+
+  start = async () => {
+    await this.props.model.restart();
+
+    this.setState({
+      started: true,
+    });
+  };
+
 }
+
 export default Ghoti;

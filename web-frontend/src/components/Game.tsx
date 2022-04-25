@@ -18,7 +18,7 @@ type MyState = {
 
 class Game extends React.Component<MyProps, MyState> {
     EMPTY = '';
-    GAME_TIME = 10;
+    GAME_TIME = 120;
     totalSecs!: number;
     __init = false;
     timer!: ReturnType<typeof setTimeout>;
@@ -50,8 +50,8 @@ class Game extends React.Component<MyProps, MyState> {
         }
 
         return (
-            <div>
-                <div className="mid_screen" id="timer">{this.state.timeStr}</div>
+            <div className='clearfix'>
+                <div className="" id="timer">{this.state.timeStr}</div>
                 {paused}
                 <Message message={this.state.message} />
                 {newRound}
@@ -217,18 +217,20 @@ class Game extends React.Component<MyProps, MyState> {
         
         if (key === "Escape") {
             this.handleEsc();
-        } else if (key === "Backspace") {
-            this.handleBackspace();
         } else if (key === "Delete") {
             this.handleDel();
-        } else if (key === "Enter") {
-            this.handleEnter();
-        } else if (key === "Tab") {
-            this.handleTab();
-        } else {
-            const char = key.toUpperCase();
-            if (this.props.model.checkChar(char)) {
-                this.props.model.wordToGuess(char);
+        } else if (!this.state.paused) {
+            if (key === "Backspace") {
+                this.handleBackspace();
+            } else if (key === "Enter") {
+                this.handleEnter();
+            } else if (key === "Tab") {
+                this.handleTab();
+            } else {
+                const char = key.toUpperCase();
+                if (this.props.model.checkChar(char)) {
+                    this.props.model.wordToGuess(char);
+                }
             }
         }
     }

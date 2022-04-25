@@ -64,10 +64,10 @@ class GhotiModel {
         await this.fetchNewWord();
     }
 
-    restart() {
+    async restart() {
         this.__round = 0;
         this.__score = 0;
-        this.newRound();
+        await this.newRound();
     }
 
     // setting up a new word from the word service
