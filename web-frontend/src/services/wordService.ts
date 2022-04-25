@@ -2,7 +2,7 @@ import { GraphQLClient } from "graphql-request";
 
 export type Word = { 
     text: string; 
-    words: Array<string | null>;
+    words: string[];
 };
 
 export type Query = { // field return type name
@@ -25,15 +25,15 @@ class WordService {
     `;
     
     constructor() {
-        console.log("Constructing service");
         this.__client = new GraphQLClient(`${this.__url}`);
     }
 
     async nextWord () : Promise<Word> {
-        console.log("in nextWord");
         const query : Query = await this.__client.request(this.__nextWord);
-        console.log("Found word: ", query);
-        return query.next;
+        const word = query.next;
+        const words = word.words;
+        words.push(word.text);
+        return {text: word.text, words: words};
     }
 }
 
