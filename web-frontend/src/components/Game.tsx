@@ -33,8 +33,8 @@ class Game extends React.Component<MyProps, MyState> {
             lastLetter: ''
         };
         if (!this.__init) {
-            this.CreateTimer(this.GAME_TIME);
             this.__init = true;
+            this.CreateTimer();
         }
     }
 	
@@ -55,7 +55,7 @@ class Game extends React.Component<MyProps, MyState> {
                 {paused}
                 <Message message={this.state.message} />
                 {newRound}
-                <Words model={this.props.model} />
+                <Words model={this.props.model} finished={this.state.finished} />
                 <br className='clear' />
                 <ScoreCard 
                     model={this.props.model} />
@@ -77,18 +77,29 @@ class Game extends React.Component<MyProps, MyState> {
 
     restart = () => {
         this.props.model.restart();
+        this.setState({
+            paused: false,
+            finished: false,
+            message: ''
+        });
 
-        this.CreateTimer(this.GAME_TIME);
+        this.CreateTimer();
     }
     
     nextRound = async () => {
         await this.props.model.newRound();
+        this.setState({
+            paused: false,
+            finished: false,
+            message: ''
+        });
 
-        this.CreateTimer(this.GAME_TIME);
+        this.CreateTimer();
     }
 
     timeIsUp = () => {
-        this.showAll(this.props.model.getCurrentWordList(), this.props.model.getGuessedWordList());
+        console.log("timeIsUp: timer: ", this.timer);
+
         let msg = '';
         if (this.props.model.isSuccess()) {
             msg = "Congrats, you've made it to round " + (this.props.model.getRound() + 1);
@@ -122,11 +133,12 @@ class Game extends React.Component<MyProps, MyState> {
         return (time < 10) ? "0" + time : + time;
     }
 
-    CreateTimer = (time: number) => {
-        this.totalSecs = time;
+    CreateTimer = () => {
+        this.totalSecs = this.GAME_TIME;
         
         this.UpdateTimer();
         this.timer = setTimeout(this.Tick, 1000);
+        console.log("CreateTimer: timer: ", this.timer);
     }
 
     Tick = () => {
@@ -143,29 +155,6 @@ class Game extends React.Component<MyProps, MyState> {
         }
     }
 
-    // make all the words visible
-    showAll(dictionary: string[], guessed: string[]) {
-        for (var i = 0; i < dictionary.length; i++) {
-            var word = dictionary[i];
-            if(guessed.indexOf(word) === -1) {
-                this.addCompleted(word);
-                var div = document.getElementById(word);
-                div!.className = "red";
-            }
-        }
-    }
-
-    // if a word is successfully guessed we make it visible
-    addCompleted(word: string) {
-		var li = document.getElementById(word);
-		var letters = li!.childNodes;
-		for (var i = 0; i < letters.length; i++) {
-			const div1 = letters[i];
-			const div2 = div1.firstChild as HTMLDivElement;
-			div2!.style.visibility = "visible";
-		}
-	};
-
     // backspace removes the previous letter from the guess
     handleBackspace() {
         this.props.model.undoPrevGuess();
@@ -176,7 +165,6 @@ class Game extends React.Component<MyProps, MyState> {
         this.props.model.shuffle();
     }
     checkGuess() {
-        const word = this.props.model.getGuessedWord();
         const result = this.props.model.makeGuess();
         if (result === Guess.BAD_GUESS) {
             this.playBadSound();
@@ -184,7 +172,6 @@ class Game extends React.Component<MyProps, MyState> {
                 this.playOldSound();
         } else {
             this.playGoodSound();
-            this.addCompleted(word);
         }
     }
     playBadSound() {
@@ -212,6 +199,13 @@ class Game extends React.Component<MyProps, MyState> {
     // escape toggles the game paused state
     handleEsc = () => {
         this.setState({paused: !this.state.paused});
+        console.log("setting paused: ", this.state.paused);
+    }
+
+    // delete cheats
+    handleDel = () => {
+        this.setState({message: 'Your word is: '+this.props.model.getCurrentWord()});
+        console.log("setting paused: ", this.state.paused);
     }
 
     // the main key event callback
@@ -223,18 +217,18 @@ class Game extends React.Component<MyProps, MyState> {
         
         if (key === "Escape") {
             this.handleEsc();
-        } else if (!this.state.paused) {
-            if (key === "Backspace") {
-                this.handleBackspace();
-            } else if (key === "Enter") {
-                this.handleEnter();
-            } else if (key === "Tab") {
-                this.handleTab();
-            } else {
-                const char = key.toUpperCase();
-                if (this.props.model.checkChar(char)) {
-                    this.props.model.wordToGuess(char);
-                }
+        } else if (key === "Backspace") {
+            this.handleBackspace();
+        } else if (key === "Delete") {
+            this.handleDel();
+        } else if (key === "Enter") {
+            this.handleEnter();
+        } else if (key === "Tab") {
+            this.handleTab();
+        } else {
+            const char = key.toUpperCase();
+            if (this.props.model.checkChar(char)) {
+                this.props.model.wordToGuess(char);
             }
         }
     }

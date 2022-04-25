@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 type MyProps = {
+	callback: () => void
 }
 
 class StartInfo extends React.Component<MyProps, {}> {
@@ -10,9 +11,7 @@ class StartInfo extends React.Component<MyProps, {}> {
 			<div id="indent_wrap">
 				<h3>Ready to play?!</h3>
 				<p>Pass a level: Get the seven letter word and/or get more than 65% of the words.</p>
-				<a href="ghoti.html"><div id="start">
-					<span>play</span>
-				</div></a>
+				<button onClick={this.props.callback} id="start">play</button>
 			</div>
 			<h3>Your influence</h3>
 			<p>This game provided to you, open source, by a father/daughter duo, who simply wanted this game and made it.</p>

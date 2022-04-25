@@ -5,6 +5,7 @@ import GhotiModel from '../model/GhotiModel';
 
 type MyProps = {
     started: boolean,
+    callback: () => void,
     model: GhotiModel
 }
 
@@ -15,7 +16,7 @@ class Ghoti extends React.Component<MyProps, MyState> {
   render() {
     if (!this.props.started) {
         return(
-            <StartInfo />
+            <StartInfo callback={this.props.callback}/>
         );
     }
 

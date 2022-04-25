@@ -4,6 +4,7 @@ import Word from './Word';
 
 type MyProps = {
     model: GhotiModel,
+    finished: boolean
 }
 
 // type MyState = {
@@ -40,7 +41,7 @@ class Words extends React.Component<MyProps, {}> {
                     count = 0;
                 }
                 // store the word for later rendering
-                container.push(<Word word={word} key={word} hidden={!this.props.model.isAlreadyGuessed(word)} />);
+                container.push(<Word finished={this.props.finished} word={word} key={word} hidden={!this.props.model.isAlreadyGuessed(word)} />);
 			});
             completed.push(<ul>{container}</ul>);
 		});

@@ -38,9 +38,9 @@ class App extends React.Component<{}, GhotiState> {
   render() {
     return (
       <div id="home_wrap">
-        <Header/>
+        <Header />
           <button onClick={this.start}>{this.state.started ? "Stop" : "Start"}</button>
-        <Ghoti started={this.state.started} model={this.model} />
+        <Ghoti started={this.state.started} callback={this.start} model={this.model} />
       </div>
     );
 
