@@ -1,5 +1,4 @@
 import WordService, { Word } from '../services/wordService';
-import React from 'react';
 
 export enum Guess {
     BAD_GUESS,
@@ -84,48 +83,12 @@ class GhotiModel {
         this.__availableLetters = this.__currentWord.split('').sort(() => Math.random() - 0.5);
         this.__guessedLetters = [];
         this.__guessedWordList = [];
-        this.initWordLayout();
         this.__isNewWord = true;
     }
 
     isNewWord() {
         return this.__isNewWord;
     }
-
-    initWordLayout() {
-        // store the <ul>s in an array before the return
-		const completed: React.ReactNode[] = [];
-
-        console.log('initWordLayout: found length: ', this.__currentWordList.length);
-
-        // order the words by size
-		var orderedWords: string[][] = [];
-		for (let i=3; i <= 7; i++) {
-			orderedWords[i] = [];
-		}
-		this.__currentWordList.forEach((word) => {
-			orderedWords[word.length].push(word.toUpperCase());
-		});
-        orderedWords.forEach((array) => {
-            // store the <li>s in an array before creating the <ul>
-            let container: React.ReactNode[] = [];
-
-			let count = 0;
-			array.forEach((word) => {
-                count++;
-
-                if (count > 12) {
-                    completed.push(React.createElement('div', null, container));
-                    container = [];
-                    count = 0;
-                }
-                // store the word for later rendering
-                container.push(React.createElement('Word', {word: word, key: word}, completed));
-			});
-            completed.push(React.createElement('ul', null, container));
-		});
-        this.__wordLayout = React.createElement('div', null, completed);
-	}
 	
    // check if a letter is one of the available letters
     checkChar(char: string): boolean {
@@ -144,7 +107,9 @@ class GhotiModel {
             this.undoPrevGuess();
         }	
     }
-
+    isAlreadyGuessed(word:string) {
+        return this.__guessedWordList.indexOf(word) !== -1;
+    }
     undoPrevGuess(){
         // Remove from end of guess
         const letter = this.__guessedLetters.pop();
