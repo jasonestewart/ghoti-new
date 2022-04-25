@@ -11,26 +11,28 @@ type MyProps = {
 type MyState = {
     paused: boolean,
     finished: boolean,
+    lastLetter: string,
+    timeStr: string,
     message: string
 }
 
 class Game extends React.Component<MyProps, MyState> {
     EMPTY = '';
-    timer!: HTMLDivElement;
     GAME_TIME = 10;
     totalSecs!: number;
-    timerID = 'timer';
     __init = false;
+    timer!: ReturnType<typeof setTimeout>;
 
     constructor(props: MyProps) {
         super(props);
         this.state = {
             paused: false,
             finished: false,
-            message: ''
+            message: '',
+            timeStr: '',
+            lastLetter: ''
         };
         if (!this.__init) {
-            this.timer = document.getElementById(this.timerID) as HTMLDivElement;
             this.CreateTimer(this.GAME_TIME);
             this.__init = true;
         }
@@ -49,6 +51,7 @@ class Game extends React.Component<MyProps, MyState> {
 
         return (
             <div>
+                <div className="mid_screen" id="timer">{this.state.timeStr}</div>
                 {paused}
                 <Message message={this.state.message} />
                 {newRound}
@@ -92,6 +95,7 @@ class Game extends React.Component<MyProps, MyState> {
         } else {
             msg = "Too bad, Game over!";
         }
+        clearTimeout(this.timer);
         this.setState({
             paused: true,
             finished: true,
@@ -100,18 +104,17 @@ class Game extends React.Component<MyProps, MyState> {
     }
 
     UpdateTimer = () => {
-        let timeStr: string = '';
         if (this.state.paused) {
-            timeStr = 'PAUSED';
+            this.setState({timeStr: 'PAUSED'});
+            console.log('timer is paused');
         } else {
             const Minutes = Math.floor(this.totalSecs / 60);
             this.totalSecs -= Minutes * (60);
 
-            timeStr = Minutes + ":" + this.LeadingZero(this.totalSecs);
+            this.setState({timeStr: Minutes + ":" + this.LeadingZero(this.totalSecs)});
         }
 
-        this.timer.innerHTML = timeStr;
-        // console.log("UpdateTimer: calling for secs: ", this.totalSecs);
+        console.log("UpdateTimer: calling for secs: ", this.totalSecs);
     }
 
 
@@ -123,18 +126,20 @@ class Game extends React.Component<MyProps, MyState> {
         this.totalSecs = time;
         
         this.UpdateTimer();
-        window.setTimeout(this.Tick, 1000);
+        this.timer = setTimeout(this.Tick, 1000);
     }
 
     Tick = () => {
         if (this.totalSecs <= 0) {
             this.timeIsUp();
         } else {
-            if (this.state.paused) {
+            if (!this.state.paused) {
                 this.totalSecs -= 1;
             }
-            this.UpdateTimer();
-            window.setTimeout(this.Tick, 1000);
+            if (!this.state.finished) {
+                this.UpdateTimer();
+                this.timer = setTimeout(this.Tick, 1000);
+            }
         }
     }
 
@@ -214,6 +219,8 @@ class Game extends React.Component<MyProps, MyState> {
         event.preventDefault();
 
         const key = event.key;
+        this.setState({lastLetter: key});
+        
         if (key === "Escape") {
             this.handleEsc();
         } else if (!this.state.paused) {

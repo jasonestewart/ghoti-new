@@ -1,14 +1,17 @@
 import * as React from 'react';
 
 type MyProps = {
-    word: string
+    word: string,
+    hidden: boolean
 }
 
 class Word extends React.Component<MyProps, {}> {
     render() {
         const letters = this.props.word.split('').map((letter) => 
             <div className='letter_box'>
-                <div style={{visibility: 'hidden'}}>{letter}</div>
+                <div style={this.props.hidden ? {visibility: 'hidden'} : {}}>
+                    {letter}
+                </div>
             </div>
         );
 
