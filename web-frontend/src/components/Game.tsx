@@ -19,9 +19,9 @@ type MyState = {
 class Game extends React.Component<MyProps, MyState> {
     EMPTY = '';
     GAME_TIME = 120;
-    totalSecs!: number;
-    __init = false;
-    timer!: ReturnType<typeof setTimeout>;
+    goodSound: HTMLAudioElement;
+    badSound: HTMLAudioElement;
+    oldSound: HTMLAudioElement;
 
     constructor(props: MyProps) {
         super(props);
@@ -32,10 +32,11 @@ class Game extends React.Component<MyProps, MyState> {
             timeStr: '',
             lastLetter: ''
         };
-        if (!this.__init) {
-            this.__init = true;
-            this.CreateTimer();
-        }
+        this.CreateTimer();
+
+        this.goodSound = new Audio('/goodSound.mp3');
+        this.badSound = new Audio('/badSound.mp3');
+        this.oldSound = new Audio('/oldSound.mp3');
     }
 	
     render() {
@@ -98,15 +99,13 @@ class Game extends React.Component<MyProps, MyState> {
     }
 
     timeIsUp = () => {
-        console.log("timeIsUp: timer: ", this.timer);
-
         let msg = '';
         if (this.props.model.isSuccess()) {
             msg = "Congrats, you've made it to round " + (this.props.model.getRound() + 1);
         } else {
             msg = "Too bad, Game over!";
         }
-        clearTimeout(this.timer);
+
         this.setState({
             paused: true,
             finished: true,
@@ -114,18 +113,18 @@ class Game extends React.Component<MyProps, MyState> {
         });
     }
 
-    UpdateTimer = () => {
+    UpdateTimer = (secs: number) => {
         if (this.state.paused) {
             this.setState({timeStr: 'PAUSED'});
             console.log('timer is paused');
         } else {
-            const Minutes = Math.floor(this.totalSecs / 60);
-            this.totalSecs -= Minutes * (60);
+            const minutes = Math.floor(secs / 60);
+            const seconds = secs - (minutes * (60));
 
-            this.setState({timeStr: Minutes + ":" + this.LeadingZero(this.totalSecs)});
+            this.setState({timeStr: minutes + ":" + this.LeadingZero(seconds)});
         }
 
-        console.log("UpdateTimer: calling for secs: ", this.totalSecs);
+        console.log("UpdateTimer: calling for secs: ", secs);
     }
 
 
@@ -134,23 +133,20 @@ class Game extends React.Component<MyProps, MyState> {
     }
 
     CreateTimer = () => {
-        this.totalSecs = this.GAME_TIME;
-        
-        this.UpdateTimer();
-        this.timer = setTimeout(this.Tick, 1000);
-        console.log("CreateTimer: timer: ", this.timer);
+        this.UpdateTimer(this.GAME_TIME);
+        setTimeout(() => this.Tick(this.GAME_TIME), 1000);
     }
 
-    Tick = () => {
-        if (this.totalSecs <= 0) {
+    Tick = (time: number) => {
+        if (time <= 0) {
             this.timeIsUp();
         } else {
             if (!this.state.paused) {
-                this.totalSecs -= 1;
+                time -= 1;
             }
             if (!this.state.finished) {
-                this.UpdateTimer();
-                this.timer = setTimeout(this.Tick, 1000);
+                this.UpdateTimer(time);
+                setTimeout(() => this.Tick(time), 1000);
             }
         }
     }
@@ -175,13 +171,13 @@ class Game extends React.Component<MyProps, MyState> {
         }
     }
     playBadSound() {
-        console.log('playBadSound: Method not implemented.');
+        this.badSound.play();
     }
     playOldSound() {
-        console.log('playOldSound: Method not implemented.');
+        this.oldSound.play();
     }
     playGoodSound() {
-        console.log('playGoodSound: Method not implemented.');
+        this.goodSound.play();
     }
     
 
