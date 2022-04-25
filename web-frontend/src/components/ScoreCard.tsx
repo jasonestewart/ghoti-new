@@ -7,10 +7,10 @@ type MyProps = {
     model: GhotiModel
 }
 
-type MyState = {
-}
+// type MyState = {
+// }
 
-class ScoreCard extends React.Component<MyProps, MyState> {
+class ScoreCard extends React.Component<MyProps, {}> {
     constructor(props: MyProps) {
         super(props);
         this.state = {
