@@ -1,45 +1,27 @@
-import * as React from 'react';
-import StartInfo from './StartInfo';
-import Game from './Game';
-import GhotiModel from '../model/GhotiModel';
+import Game from "./Game";
+import GhotiModel from "../model/GhotiModel";
+import { useState } from "react";
+import StartInfo from "./StartInfo";
 
 type MyProps = {
-    model: GhotiModel
-}
+    model: GhotiModel;
+};
 
-type MyState = {
-  started: boolean
-}
+const Ghoti = ({ model }: MyProps) => {
+    const [isOpen, setIsOpen] = useState(true);
 
-class Ghoti extends React.Component<MyProps, MyState> {
-  constructor(props: MyProps) {
-    super(props);
-    this.state = {started: false};
-  }
+    const start = async () => {
+        console.log("starting game");
 
-  render() {
-    if (!this.state.started) {
-        return(
-            <StartInfo callback={this.start}/>
-        );
+        await model.restart();
+        setIsOpen(false);
+    };
+
+    if (isOpen) {
+        return <StartInfo callback={start} />;
     }
 
-
-    return (
-        <Game model={this.props.model} />
-    );
-
-  }
-
-
-  start = async () => {
-    await this.props.model.restart();
-
-    this.setState({
-      started: true,
-    });
-  };
-
-}
+    return <Game model={model} />;
+};
 
 export default Ghoti;
