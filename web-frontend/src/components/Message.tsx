@@ -1,21 +1,17 @@
-import * as React from 'react';
-
 type MyProps = {
-    message: string
-}
+    message: string;
+};
 
-class Message extends React.Component<MyProps, {}> {
-    render() {
-        if (this.props.message === "") {
-            return (null);
-        }
-
-        return (
-            <div>
-                <span className='message'>{this.props.message}</span>
-            </div>
-        );
+const Message = ({ message }: MyProps) => {
+    if (message === "") {
+        return null;
     }
+
+    return (
+        <div>
+            <span className="message">{message}</span>
+        </div>
+    );
 };
 
 export default Message;
