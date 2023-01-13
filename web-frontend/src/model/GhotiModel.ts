@@ -1,9 +1,9 @@
-import WordService, { Word } from '../services/wordService';
+import WordService, { Word } from "../services/wordService";
 
 export enum Guess {
     BAD_GUESS,
     ALREADY_GUESSED,
-    GOOD_GUESS
+    GOOD_GUESS,
 }
 
 class GhotiModel {
@@ -19,7 +19,7 @@ class GhotiModel {
     __success: boolean;
     __isNewWord: boolean;
     __wordLayout: React.ReactNode;
-    EMPTY = '';
+    EMPTY = "";
 
     constructor() {
         this.__service = new WordService();
@@ -30,10 +30,10 @@ class GhotiModel {
     }
 
     // simple getters
-    getScore(){
+    getScore() {
         return this.__score;
     }
-    getRound(){
+    getRound() {
         return this.__round;
     }
     getCurrentWord(): string {
@@ -51,10 +51,10 @@ class GhotiModel {
     getGuessedWordList(): string[] {
         return this.__guessedWordList;
     }
-    getGuessedWord(){
-        return this.__guessedLetters.join('');
+    getGuessedWord() {
+        return this.__guessedLetters.join("");
     }
-    getWordLayout(){
+    getWordLayout() {
         return this.__wordLayout;
     }
 
@@ -68,19 +68,24 @@ class GhotiModel {
         this.__round = 0;
         this.__score = 0;
         await this.newRound();
+        console.log("GhotiModel.restart");
     }
 
     // setting up a new word from the word service
     async fetchNewWord() {
         this.__word = await this.__service.nextWord();
         this.__currentWord = this.__word.text.toUpperCase();
-        this.__currentWordList = this.__word.words.map((word) => word.toUpperCase());
+        this.__currentWordList = this.__word.words.map((word) =>
+            word.toUpperCase()
+        );
 
         // the 7-letter word must be added to the word list
         if (-1 === this.__currentWordList.indexOf(this.__currentWord)) {
             this.__currentWordList.push(this.__currentWord);
         }
-        this.__availableLetters = this.__currentWord.split('').sort(() => Math.random() - 0.5);
+        this.__availableLetters = this.__currentWord
+            .split("")
+            .sort(() => Math.random() - 0.5);
         this.__guessedLetters = [];
         this.__guessedWordList = [];
         this.__isNewWord = true;
@@ -89,8 +94,8 @@ class GhotiModel {
     isNewWord() {
         return this.__isNewWord;
     }
-	
-   // check if a letter is one of the available letters
+
+    // check if a letter is one of the available letters
     checkChar(char: string): boolean {
         return this.__availableLetters.indexOf(char) === -1 ? false : true;
     }
@@ -102,27 +107,29 @@ class GhotiModel {
         this.__availableLetters[index] = this.EMPTY; // remove the first instance of char from letters
     }
 
-    emptyGuessedLetters(){
+    emptyGuessedLetters() {
         while (this.__guessedLetters.length !== 0) {
             this.undoPrevGuess();
-        }	
+        }
     }
-    isAlreadyGuessed(word:string) {
+    isAlreadyGuessed(word: string) {
         return this.__guessedWordList.indexOf(word) !== -1;
     }
-    undoPrevGuess(){
+    undoPrevGuess() {
         // Remove from end of guess
         const letter = this.__guessedLetters.pop();
         let index = this.__guessedLetters.length;
-        
+
         // Add to first free space of word
         index = this.__availableLetters.indexOf(this.EMPTY);
         // this.view.setWord(letter, index);
         this.__availableLetters[index] = letter!;
     }
 
-    shuffle(){
-        this.__availableLetters = this.__availableLetters.sort(() => Math.random() - 0.5);
+    shuffle() {
+        this.__availableLetters = this.__availableLetters.sort(
+            () => Math.random() - 0.5
+        );
     }
 
     isWord(word: string) {
@@ -140,11 +147,11 @@ class GhotiModel {
             } else {
                 this.__guessedWordList.push(word);
                 this.updateScore(word);
-                console.log("makeGuess: good guess");          
+                console.log("makeGuess: good guess");
                 return Guess.GOOD_GUESS;
             }
         } else {
-            console.log("makeGuess: bad guess");      
+            console.log("makeGuess: bad guess");
             return Guess.BAD_GUESS;
         }
     }
