@@ -5,8 +5,8 @@ type MyProps = {
 };
 
 const Word = ({ word, hidden, finished }: MyProps) => {
-    const letters = word.split("").map((letter) => (
-        <div className="letter_box">
+    const letters = word.split("").map((letter, i) => (
+        <div key={`i-${i}`} className="letter_box">
             <div
                 style={{
                     visibility: hidden && !finished ? "hidden" : "visible",

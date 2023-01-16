@@ -11,7 +11,7 @@ const Words = ({ model, finished }: MyProps) => {
     const makeWordLayout = () => {
         // store the <ul>s in an array before the return
         const completed: React.ReactNode[] = [];
-        const wordList: string[] = model.getCurrentWordList() ?? [];
+        const wordList: string[] = model.getCurrentWordList();
 
         // order the words by size
         var orderedWords: string[][] = [];
@@ -21,7 +21,7 @@ const Words = ({ model, finished }: MyProps) => {
         wordList.forEach((word) => {
             orderedWords[word.length].push(word.toUpperCase());
         });
-
+        let ul = 0;
         // now that they're ordered, make columns of words
         orderedWords.forEach((array) => {
             // store the <li>s in an array before creating the <ul>
@@ -32,7 +32,7 @@ const Words = ({ model, finished }: MyProps) => {
                 count++;
 
                 if (count > 12) {
-                    completed.push(<ul>{container}</ul>);
+                    completed.push(<ul key={`ul-2-${count}`}>{container}</ul>);
                     container = [];
                     count = 0;
                 }
@@ -41,12 +41,13 @@ const Words = ({ model, finished }: MyProps) => {
                     <Word
                         finished={finished}
                         word={word}
-                        key={word}
+                        key={`word-${count}`}
                         hidden={!model.isAlreadyGuessed(word)}
                     />
                 );
             });
-            completed.push(<ul>{container}</ul>);
+            ul++;
+            completed.push(<ul key={`ul-1-${ul}`}>{container}</ul>);
         });
         return <div>{completed}</div>;
     };
