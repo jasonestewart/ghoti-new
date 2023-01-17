@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import GhotiModel from "../model/GhotiModel";
 import Word from "./Word";
 
@@ -8,50 +8,48 @@ type MyProps = {
 };
 
 const Words = ({ model, finished }: MyProps) => {
-    const makeWordLayout = () => {
-        // store the <ul>s in an array before the return
-        const completed: React.ReactNode[] = [];
-        const wordList: string[] = model.getCurrentWordList();
+    const [wordList, setWordList] = useState<string[]>([]);
+    const [orderedWords, setOrderedWords] = useState<string[][]>([]);
 
-        // order the words by size
-        var orderedWords: string[][] = [];
+    useEffect(() => {
+        const wl = model.getCurrentWordList();
+        setWordList(wl);
+        console.log("found word list: ", wl);
+    }, [model]);
+
+    useEffect(() => {
+        let ow: string[][] = [];
         for (let i = 3; i <= 7; i++) {
-            orderedWords[i] = [];
+            ow[i] = [];
         }
+
         wordList.forEach((word) => {
-            orderedWords[word.length].push(word.toUpperCase());
+            ow[word.length].push(word.toUpperCase());
         });
-        let ul = 0;
-        // now that they're ordered, make columns of words
-        orderedWords.forEach((array) => {
-            // store the <li>s in an array before creating the <ul>
-            let container: React.ReactNode[] = [];
+        console.log("found ordered word list: ", ow);
+        setOrderedWords(ow);
+    }, [wordList]);
 
-            let count = 0;
-            array.forEach((word) => {
-                count++;
+    if (!wordList) return null;
 
-                if (count > 12) {
-                    completed.push(<ul key={`ul-2-${count}`}>{container}</ul>);
-                    container = [];
-                    count = 0;
-                }
-                // store the word for later rendering
-                container.push(
-                    <Word
-                        finished={finished}
-                        word={word}
-                        key={`word-${count}`}
-                        hidden={!model.isAlreadyGuessed(word)}
-                    />
-                );
-            });
-            ul++;
-            completed.push(<ul key={`ul-1-${ul}`}>{container}</ul>);
-        });
-        return <div>{completed}</div>;
-    };
-    return <div id="completed">{makeWordLayout()}</div>;
+    // now that they're ordered, make columns of words
+    const letters = orderedWords.map((array, letterCount) => {
+        const words = array.map((word, wordCount) => (
+            <Word
+                finished={finished}
+                word={word}
+                key={`word-${wordCount}`}
+                hidden={!model.isAlreadyGuessed(word)}
+            />
+        ));
+        return (
+            <div id={`letters-${letterCount}`} key={`div-1-${letterCount}`}>
+                {words}
+            </div>
+        );
+    });
+
+    return <div id="completed">{letters}</div>;
 };
 
 export default Words;

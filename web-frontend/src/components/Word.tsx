@@ -18,9 +18,9 @@ const Word = ({ word, hidden, finished }: MyProps) => {
     ));
 
     return (
-        <li className={finished && hidden ? "red" : ""} id={word}>
+        <div className={finished && hidden ? "red" : ""} id={word}>
             {letters}
-        </li>
+        </div>
     );
 };
 
