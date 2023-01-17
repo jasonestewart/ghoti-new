@@ -129,4 +129,6 @@ body {
   padding: 3px 30px;
   }
   
-  
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
