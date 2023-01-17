@@ -6,8 +6,13 @@ export type Word = {
 };
 
 class WordService {
+  wordCount: number;
+  constructor() {
+    this.wordCount = ALLWORDS.length;
+  }
+
   nextWord(): Word {
-    const rndm = Math.floor(Math.random() * ALLWORDS.length);
+    const rndm = Math.floor(Math.random() * this.wordCount);
 
     const word = ALLWORDS[rndm];
     const words = word.words;
