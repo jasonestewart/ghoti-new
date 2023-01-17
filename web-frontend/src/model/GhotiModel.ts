@@ -21,8 +21,8 @@ class GhotiModel {
     __wordLayout: React.ReactNode;
     EMPTY = "";
 
-    constructor() {
-        this.__service = new WordService();
+    constructor(service: WordService) {
+        this.__service = service;
         this.__score = 0;
         this.__round = 1;
         this.__success = false;
