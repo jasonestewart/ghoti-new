@@ -27,6 +27,10 @@ class GhotiModel {
         this.__round = 1;
         this.__success = false;
         this.__isNewWord = false;
+        this.__currentWordList = [];
+        this.__guessedWordList = [];
+        this.__guessedLetters = [];
+        this.__availableLetters = [];
     }
 
     // simple getters
@@ -58,22 +62,22 @@ class GhotiModel {
         return this.__wordLayout;
     }
 
-    async newRound() {
+    newRound() {
         this.__round++;
         this.__success = false;
-        await this.fetchNewWord();
+        this.fetchNewWord();
     }
 
-    async restart() {
+    restart() {
         this.__round = 0;
         this.__score = 0;
-        await this.newRound();
+        this.newRound();
         console.log("GhotiModel.restart");
     }
 
     // setting up a new word from the word service
-    async fetchNewWord() {
-        this.__word = await this.__service.nextWord();
+    fetchNewWord() {
+        this.__word = this.__service.nextWord();
         this.__currentWord = this.__word.text.toUpperCase();
         this.__currentWordList = this.__word.words.map((word) =>
             word.toUpperCase()
