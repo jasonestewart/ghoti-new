@@ -43,13 +43,17 @@ const Words = ({ model, finished }: MyProps) => {
             />
         ));
         return (
-            <div id={`letters-${letterCount}`} key={`div-1-${letterCount}`}>
+            <div
+                id={`letters-${letterCount}`}
+                key={`-${letterCount}`}
+                className="flex flex-wrap flex-col"
+            >
                 {words}
             </div>
         );
     });
 
-    return <div id="completed">{letters}</div>;
+    return <div className="flex flex-row gap-1">{letters}</div>;
 };
 
 export default Words;
