@@ -8,14 +8,14 @@ type MyProps = {
 
 const ScoreCard = ({ model }: MyProps) => {
     return (
-        <div id="type_area">
+        <div id="type_area" className="flex">
             <Score
                 score={model.getScore()}
                 percent={Math.floor(model.getPercent() * 100)}
                 round={model.getRound()}
             />
-            <Letters letters={model.getAvailableLetters()} />
-            <Letters letters={model.getGuessedLetters()} />
+            <Letters prefix="avail" letters={model.getAvailableLetters()} />
+            <Letters prefix="guess" letters={model.getGuessedLetters()} />
         </div>
     );
 };
