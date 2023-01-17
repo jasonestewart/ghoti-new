@@ -44,6 +44,7 @@ const Game = ({ model }: MyProps) => {
                 }
             }
         } else {
+            setTimeStr("PAUSED");
             let msg = "";
             if (model.isSuccess()) {
                 msg =
@@ -64,10 +65,10 @@ const Game = ({ model }: MyProps) => {
         console.log("Creating timer");
     };
 
-    const nextRound = async () => {
+    const nextRound = () => {
         console.log("Next round");
 
-        await model.newRound();
+        model.newRound();
         setPaused(false);
         setFinished(false);
         setMessage("");
@@ -184,7 +185,7 @@ const Game = ({ model }: MyProps) => {
             {newRound}
             <Words model={model} finished={finished} />
             <br className="clear" />
-            <ScoreCard model={model} />
+          <ScoreCard model={model} />
         </div>
     );
 };
