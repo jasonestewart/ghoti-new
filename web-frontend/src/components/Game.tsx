@@ -197,26 +197,30 @@ const Game = ({ model }: MyProps) => {
                     </Dialog.Panel>
                 </div>
             </Dialog>
+            <div className="flex mt-6 mr-2 absolute top-0 right-0">
+                <div className="mt-6 mr-2" id="timer">
+                    {timeStr}
+                </div>
 
-            <div className="mt-6" id="timer">
-                {timeStr}
+                <button
+                    className=" rounded-3xl border border-transparent bg-indigo-600 px-2 text-md font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    onClick={() => setPaused(true)}
+                >
+                    Pause Game
+                </button>
             </div>
-
-            <button
-                className="inline-flex items-right rounded border border-transparent bg-indigo-600 px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                onClick={() => setPaused(true)}
-            >
-                Pause Game
-            </button>
 
             <Message message={message} />
 
             {newRound}
-
-            <Words model={model} finished={finished} />
-            
-            <br className="clear" />
-            <ScoreCard model={model} />
+            <div className="">
+                <div className="mt-10">
+                    <Words model={model} finished={finished} />
+                </div>
+                <div className="mt-6">
+                <ScoreCard model={model} />
+                </div>
+            </div>
         </div>
     );
 };
