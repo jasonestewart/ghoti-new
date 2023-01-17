@@ -4,6 +4,7 @@ import Words from "./Words";
 import GhotiModel, { Guess } from "../model/GhotiModel";
 import Message from "./Message";
 import { playBadSound, playGoodSound, playOldSound } from "../util/helper";
+import { Dialog } from "@headlessui/react";
 
 const GAME_TIME = 120;
 let timerCreated = false;
@@ -174,18 +175,48 @@ const Game = ({ model }: MyProps) => {
 
     return (
         <div className="clearfix">
-            <div className="" id="timer">
+            <Dialog
+                open={paused}
+                onClose={() => setPaused(false)}
+                className="relative z-50"
+            >
+                <div className="fixed inset-0 flex bg-black items-center justify-center p-4">
+                    <Dialog.Panel className="w-full max-w-sm rounded bg-slate-500 p-4 text-center">
+                        <Dialog.Title className="text-center">
+                            Ghoti is Paused
+                        </Dialog.Title>
+                        <Dialog.Description>
+                            You can breathe easy, your game is paused!
+                        </Dialog.Description>
+                        <button
+                            className="inline-flex items-center rounded border border-transparent bg-indigo-600 mt-2 px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            onClick={() => setPaused(false)}
+                        >
+                            Resume
+                        </button>
+                    </Dialog.Panel>
+                </div>
+            </Dialog>
+
+            <div className="mt-6" id="timer">
                 {timeStr}
             </div>
-            <div>
-                <button onClick={() => setPaused(true)}>pause</button>
-                <button onClick={() => setPaused(false)}>resume</button>
-            </div>
+
+            <button
+                className="inline-flex items-right rounded border border-transparent bg-indigo-600 px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                onClick={() => setPaused(true)}
+            >
+                Pause Game
+            </button>
+
             <Message message={message} />
+
             {newRound}
+
             <Words model={model} finished={finished} />
+            
             <br className="clear" />
-          <ScoreCard model={model} />
+            <ScoreCard model={model} />
         </div>
     );
 };
