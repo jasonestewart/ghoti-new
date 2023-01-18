@@ -1,10 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import ScoreCard from "./ScoreCard";
 import Words from "./Words";
 import GhotiModel, { Guess } from "../model/GhotiModel";
 import Message from "./Message";
-import { playBadSound, playGoodSound, playOldSound } from "../util/helper";
 import { Dialog } from "@headlessui/react";
+import Score from "./Score";
+import Letters from "./Letters";
+import { playBadSound, playGoodSound, playOldSound } from "../util/helper";
+import useEventListener from "@use-it/event-listener";
 
 const GAME_TIME = 20;
 let timerCreated = false;
@@ -19,6 +22,51 @@ const Game = ({ model }: MyProps) => {
     const [message, setMessage] = useState("");
     const [timeStr, setTimeStr] = useState("");
     const [count, setCount] = useState(GAME_TIME);
+    const [lastKey, setLastKey] = useState("");
+
+    let handled = false;
+
+    // the main key event callback
+    const handleKeyPress = useCallback((event: KeyboardEvent) => {
+        event.preventDefault();
+
+        if (handled || !model) return;
+
+        handled = true;
+        const key = event.key;
+        setLastKey(key);
+
+        if (key === "Delete") {
+            setMessage(`Your word is: ${model.getCurrentWord()}`);
+        } else if (key === "Backspace") {
+            model.undoPrevGuess();
+        } else if (key === "Enter") {
+            const result = model.makeGuess();
+            if (result === Guess.BAD_GUESS) {
+                playBadSound();
+            } else if (result === Guess.ALREADY_GUESSED) {
+                playOldSound();
+            } else {
+                playGoodSound();
+            }
+        } else if (key === "Tab") {
+            model.shuffle();
+        } else {
+            const char = key.toUpperCase();
+            model.wordToGuess(char);
+        }
+        handled = false;
+    }, []);
+
+    useEventListener("keydown", handleKeyPress);
+
+    useEffect(() => {
+        if (!timerCreated) {
+            console.log("Creating Timer");
+            CreateTimer();
+            timerCreated = true;
+        }
+    }, []);
 
     useEffect(() => {
         if (count > 1) {
@@ -48,24 +96,26 @@ const Game = ({ model }: MyProps) => {
             setPaused(true);
             setFinished(true);
         }
-    }, [count, paused, finished, model]);
+    }, [count, paused, finished]);
 
     useEffect(() => {
         if (finished && model.isSuccess()) {
             setSuccess(true);
         }
-    }, [finished]);
+    }, [finished, model]);
 
     const CreateTimer = () => {
         setCount(GAME_TIME);
         console.log("Creating timer");
     };
+
     const reset = () => {
         setPaused(false);
         setFinished(false);
         setSuccess(false);
         setMessage("");
     };
+
     const nextRound = () => {
         if (!success) {
             restart();
@@ -77,83 +127,6 @@ const Game = ({ model }: MyProps) => {
         }
     };
 
-    // enter guesses a word
-    const handleEnter = () => {
-        const result = model.makeGuess();
-        if (result === Guess.BAD_GUESS) {
-            playBadSound();
-        } else if (result === Guess.ALREADY_GUESSED) {
-            playOldSound();
-        } else {
-            playGoodSound();
-        }
-
-        if (model.isFinished()) {
-            setSuccess(true);
-        }
-    };
-
-    // escape toggles the game paused state
-    const handleEsc = () => {
-        console.log("setting paused: ", !paused);
-        setPaused(!paused);
-    };
-
-    // delete cheats
-    const handleDel = () => {
-        setMessage(`Your word is: ${model.getCurrentWord()}`);
-        console.log("Your paused setting is: ", paused);
-    };
-
-    // backspace removes the previous letter from the guess
-    const handleBackspace = () => {
-        model.undoPrevGuess();
-    };
-
-    // tab shuffles the letters
-    const handleTab = () => {
-        model.shuffle();
-    };
-
-    // the main key event callback
-    const handleKeyPress = (event: KeyboardEvent) => {
-        event.preventDefault();
-
-        if (paused) return;
-
-        const key = event.key;
-
-        if (key === "Escape") {
-            handleEsc();
-        } else if (key === "Delete") {
-            handleDel();
-        } else if (key === "Backspace") {
-            handleBackspace();
-        } else if (key === "Enter") {
-            handleEnter();
-        } else if (key === "Tab") {
-            handleTab();
-        } else {
-            const char = key.toUpperCase();
-            if (model.checkChar(char)) {
-                model.wordToGuess(char);
-            }
-        }
-    };
-
-    useEffect(() => {
-        if (!timerCreated) {
-            window.addEventListener("keydown", (e) => handleKeyPress(e));
-            console.log("mounting listener");
-            CreateTimer();
-            timerCreated = true;
-        }
-        return () => {
-            window.removeEventListener("keydown", (e) => handleKeyPress(e));
-            console.log("unmounting listener");
-        };
-    }, []);
-
     const restart = () => {
         console.log("Game.restart");
         model.restart();
@@ -161,6 +134,14 @@ const Game = ({ model }: MyProps) => {
 
         CreateTimer();
     };
+
+    const wordList = useMemo(() => {
+        return model.getCurrentWordList();
+    }, [model, finished]);
+
+    const guessedWordList = useMemo(() => {
+        return model.getGuessedWordList();
+    }, [model, finished]);
 
     return (
         <div className="clearfix">
@@ -228,16 +209,28 @@ const Game = ({ model }: MyProps) => {
 
             <Message message={message} />
 
-            <div className="">
-                <div className="mt-10 max-h-[600px]">
-                    <Words
-                        model={model}
-                        finished={finished}
-                        wordList={model.getCurrentWordList()}
+            <div className="mt-10 max-h-[600px]">
+                <Words
+                    finished={finished}
+                    wordList={wordList}
+                    guessedWordList={guessedWordList}
+                />
+            </div>
+            <div className="mt-6">
+                <div id="type_area" className="flex">
+                    <Score
+                        score={model.getScore()}
+                        percent={Math.floor(model.getPercent() * 100)}
+                        round={model.getRound()}
                     />
-                </div>
-                <div className="mt-6">
-                    <ScoreCard model={model} />
+                    <Letters
+                        prefix="avail"
+                        letters={model.getAvailableLetters()}
+                    />
+                    <Letters
+                        prefix="guess"
+                        letters={model.getGuessedLetters()}
+                    />
                 </div>
             </div>
         </div>
