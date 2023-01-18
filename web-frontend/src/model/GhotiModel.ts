@@ -166,9 +166,11 @@ class GhotiModel {
     updateScore(word: string) {
         this.__score += this.scoreWord(word);
 
-        // if we guess the 7-letter word,
+        // if we guess a 7-letter word,
         // or if we guess > 2/3 of the words: we succeed
+        console.log("update score: found word length: ", word.length);
         if (word.length === 7) {
+            console.log("update score: success");
             this.__success = true;
         } else if (this.getPercent() > 0.66) {
             this.__success = true;
