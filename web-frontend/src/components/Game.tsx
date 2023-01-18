@@ -119,24 +119,24 @@ const Game = ({ model }: MyProps) => {
     const handleKeyPress = (event: KeyboardEvent) => {
         event.preventDefault();
 
+        if (paused) return;
+
         const key = event.key;
 
         if (key === "Escape") {
             handleEsc();
         } else if (key === "Delete") {
             handleDel();
-        } else if (!paused) {
-            if (key === "Backspace") {
-                handleBackspace();
-            } else if (key === "Enter") {
-                handleEnter();
-            } else if (key === "Tab") {
-                handleTab();
-            } else {
-                const char = key.toUpperCase();
-                if (model.checkChar(char)) {
-                    model.wordToGuess(char);
-                }
+        } else if (key === "Backspace") {
+            handleBackspace();
+        } else if (key === "Enter") {
+            handleEnter();
+        } else if (key === "Tab") {
+            handleTab();
+        } else {
+            const char = key.toUpperCase();
+            if (model.checkChar(char)) {
+                model.wordToGuess(char);
             }
         }
     };
@@ -169,7 +169,7 @@ const Game = ({ model }: MyProps) => {
                 onClose={() => nextRound()}
                 className="relative z-50"
             >
-                <div className="fixed inset-0 flex items-center justify-center p-4">
+                <div className="fixed inset-0 bg-slate-700/75 flex items-center justify-center p-4">
                     <Dialog.Panel className="w-full max-w-sm rounded bg-slate-500 p-4 text-center">
                         <Dialog.Title className="text-center">
                             {success
@@ -195,7 +195,7 @@ const Game = ({ model }: MyProps) => {
                 onClose={() => setPaused(false)}
                 className="relative z-50"
             >
-                <div className="fixed inset-0 flex items-center justify-center p-4">
+                <div className="fixed inset-0 flex bg-slate-500 items-center justify-center p-4">
                     <Dialog.Panel className="w-full max-w-sm rounded bg-slate-500 p-4 text-center">
                         <Dialog.Title className="text-center">
                             Ghoti is Paused
