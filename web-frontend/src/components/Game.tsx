@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import ScoreCard from "./ScoreCard";
 import Words from "./Words";
 import GhotiModel, { Guess } from "../model/GhotiModel";
 import Message from "./Message";
