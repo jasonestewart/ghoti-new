@@ -13,13 +13,11 @@ type MyProps = {
     model: GhotiModel;
 };
 const Game = ({ model }: MyProps) => {
-    const EMPTY = "";
     const [paused, setPaused] = useState(false);
     const [finished, setFinished] = useState(false);
     const [success, setSuccess] = useState(false);
     const [message, setMessage] = useState("");
     const [timeStr, setTimeStr] = useState("");
-    const [lastLetter, setLastLetter] = useState("");
     const [count, setCount] = useState(GAME_TIME);
 
     useEffect(() => {
@@ -122,7 +120,6 @@ const Game = ({ model }: MyProps) => {
         event.preventDefault();
 
         const key = event.key;
-        setLastLetter(key);
 
         if (key === "Escape") {
             handleEsc();
