@@ -107,9 +107,12 @@ class GhotiModel {
 
     // moves a letter from the letters list to the guesses list
     wordToGuess(char: string) {
-        this.__guessedLetters.push(char); // add char to the end of guesses
-        const index = this.__availableLetters.indexOf(char);
-        this.__availableLetters[index] = this.EMPTY; // remove the first instance of char from letters
+        console.log("GhotiModle.wordToGuess: ", char);
+        if (this.checkChar(char)) {
+            this.__guessedLetters.push(char); // add char to the end of guesses
+            const index = this.__availableLetters.indexOf(char);
+            this.__availableLetters[index] = this.EMPTY; // remove the first instance of char from letters
+        }
     }
 
     emptyGuessedLetters() {
