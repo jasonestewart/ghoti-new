@@ -24,7 +24,7 @@ class GhotiModel {
     constructor(service: WordService) {
         this.__service = service;
         this.__score = 0;
-        this.__round = 1;
+        this.__round = 0;
         this.__success = false;
         this.__isNewWord = false;
         this.__currentWordList = [];
@@ -63,16 +63,17 @@ class GhotiModel {
     }
 
     newRound() {
+        console.log("GhotiModel.newRound: ", this.__round);
         this.__round++;
         this.__success = false;
         this.fetchNewWord();
     }
 
     restart() {
+        console.log("GhotiModel.restart");
         this.__round = 0;
         this.__score = 0;
         this.newRound();
-        console.log("GhotiModel.restart");
     }
 
     // setting up a new word from the word service

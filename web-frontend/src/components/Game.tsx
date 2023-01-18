@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ScoreCard from "./ScoreCard";
 import Words from "./Words";
 import GhotiModel, { Guess } from "../model/GhotiModel";
@@ -6,7 +6,7 @@ import Message from "./Message";
 import { playBadSound, playGoodSound, playOldSound } from "../util/helper";
 import { Dialog } from "@headlessui/react";
 
-const GAME_TIME = 120;
+const GAME_TIME = 20;
 let timerCreated = false;
 
 type MyProps = {
@@ -16,6 +16,7 @@ const Game = ({ model }: MyProps) => {
     const EMPTY = "";
     const [paused, setPaused] = useState(false);
     const [finished, setFinished] = useState(false);
+    const [success, setSuccess] = useState(false);
     const [message, setMessage] = useState("");
     const [timeStr, setTimeStr] = useState("");
     const [lastLetter, setLastLetter] = useState("");
@@ -46,35 +47,36 @@ const Game = ({ model }: MyProps) => {
             }
         } else {
             setTimeStr("PAUSED");
-            let msg = "";
-            if (model.isSuccess()) {
-                msg =
-                    "Congrats, you've made it to round " +
-                    (model.getRound() + 1);
-            } else {
-                msg = "Too bad, Game over!";
-            }
-
             setPaused(true);
             setFinished(true);
-            setMessage(msg);
         }
     }, [count, paused, finished, model]);
+
+    useEffect(() => {
+        if (finished && model.isSuccess()) {
+            setSuccess(true);
+        }
+    }, [finished]);
 
     const CreateTimer = () => {
         setCount(GAME_TIME);
         console.log("Creating timer");
     };
-
-    const nextRound = () => {
-        console.log("Next round");
-
-        model.newRound();
+    const reset = () => {
         setPaused(false);
         setFinished(false);
+        setSuccess(false);
         setMessage("");
-
-        CreateTimer();
+    };
+    const nextRound = () => {
+        if (!success) {
+            restart();
+        } else {
+            console.log("Next round");
+            reset();
+            model.newRound();
+            CreateTimer();
+        }
     };
 
     // enter guesses a word
@@ -89,7 +91,7 @@ const Game = ({ model }: MyProps) => {
         }
 
         if (model.isFinished()) {
-            nextRound();
+            setSuccess(true);
         }
     };
 
@@ -155,20 +157,10 @@ const Game = ({ model }: MyProps) => {
         };
     }, []);
 
-    let newRound = <span></span>;
-    if (finished) {
-        if (model.isSuccess()) {
-            newRound = <button onClick={() => nextRound()}>Proceed</button>;
-        } else {
-            newRound = <button onClick={() => restart()}>Restart</button>;
-        }
-    }
-
     const restart = () => {
+        console.log("Game.restart");
         model.restart();
-        setPaused(false);
-        setFinished(false);
-        setMessage("");
+        reset();
 
         CreateTimer();
     };
@@ -176,7 +168,33 @@ const Game = ({ model }: MyProps) => {
     return (
         <div className="clearfix">
             <Dialog
-                open={paused}
+                open={finished}
+                onClose={() => nextRound()}
+                className="relative z-50"
+            >
+                <div className="fixed inset-0 flex items-center justify-center p-4">
+                    <Dialog.Panel className="w-full max-w-sm rounded bg-slate-500 p-4 text-center">
+                        <Dialog.Title className="text-center">
+                            {success
+                                ? "Congratulations!"
+                                : "Aw... You didn't complete the round!"}
+                        </Dialog.Title>
+                        <Dialog.Description>
+                            {success
+                                ? "You can proceed to the next round!"
+                                : "Would you like to restart?"}
+                        </Dialog.Description>
+                        <button
+                            className="inline-flex items-center rounded border border-transparent bg-indigo-600 mt-2 px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            onClick={() => nextRound()}
+                        >
+                            {success ? "Proceed" : "Restart"}
+                        </button>
+                    </Dialog.Panel>
+                </div>
+            </Dialog>
+            <Dialog
+                open={!finished && paused}
                 onClose={() => setPaused(false)}
                 className="relative z-50"
             >
@@ -197,6 +215,7 @@ const Game = ({ model }: MyProps) => {
                     </Dialog.Panel>
                 </div>
             </Dialog>
+
             <div className="flex mt-6 mr-2 absolute top-0 right-0">
                 <div className="mt-6 mr-2" id="timer">
                     {timeStr}
@@ -212,10 +231,13 @@ const Game = ({ model }: MyProps) => {
 
             <Message message={message} />
 
-            {newRound}
             <div className="">
-                <div className="mt-10">
-                    <Words model={model} finished={finished} />
+                <div className="mt-10 max-h-[600px]">
+                    <Words
+                        model={model}
+                        finished={finished}
+                        wordList={model.getCurrentWordList()}
+                    />
                 </div>
                 <div className="mt-6">
                     <ScoreCard model={model} />
