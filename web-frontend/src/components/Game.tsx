@@ -9,7 +9,7 @@ import Letters from "./Letters";
 import { playBadSound, playGoodSound, playOldSound } from "../util/helper";
 import useEventListener from "@use-it/event-listener";
 
-const GAME_TIME = 20;
+const GAME_TIME = 120;
 let timerCreated = false;
 
 type MyProps = {
