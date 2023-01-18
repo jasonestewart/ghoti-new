@@ -168,7 +168,7 @@ class GhotiModel {
 
         // if we guess the 7-letter word,
         // or if we guess > 2/3 of the words: we succeed
-        if (this.isWord(word)) {
+        if (word.length === 7) {
             this.__success = true;
         } else if (this.getPercent() > 0.66) {
             this.__success = true;
