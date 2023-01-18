@@ -3,19 +3,13 @@ import GhotiModel from "../model/GhotiModel";
 import Word from "./Word";
 
 type MyProps = {
-    model: GhotiModel;
+    wordList: string[];
     finished: boolean;
+    model: GhotiModel;
 };
 
-const Words = ({ model, finished }: MyProps) => {
-    const [wordList, setWordList] = useState<string[]>([]);
+const Words = ({ wordList, model, finished }: MyProps) => {
     const [orderedWords, setOrderedWords] = useState<string[][]>([]);
-
-    useEffect(() => {
-        const wl = model.getCurrentWordList();
-        setWordList(wl);
-        console.log("found word list: ", wl);
-    }, [model]);
 
     useEffect(() => {
         let ow: string[][] = [];
@@ -26,7 +20,6 @@ const Words = ({ model, finished }: MyProps) => {
         wordList.forEach((word) => {
             ow[word.length].push(word.toUpperCase());
         });
-        console.log("found ordered word list: ", ow);
         setOrderedWords(ow);
     }, [wordList]);
 
@@ -53,7 +46,7 @@ const Words = ({ model, finished }: MyProps) => {
         );
     });
 
-    return <div className="flex flex-row gap-1">{letters}</div>;
+    return <div className="flex flex-row gap-4">{letters}</div>;
 };
 
 export default Words;
