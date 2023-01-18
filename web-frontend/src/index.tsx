@@ -1,6 +1,6 @@
 import * as React from "react";
 import ReactDOM from "react-dom/client";
-import "./index2.css";
+import "./index.css";
 import Ghoti from "./components/Ghoti";
 
 const root = ReactDOM.createRoot(
